@@ -88,12 +88,13 @@ class RequestingThread(Thread):
     def run(self):
         # Wait for any requests
         while True:
-            try:
-                req = self.queue.get(timeout=10)
-                req.connect()
-            except Queue.Empty, e:
-                pass
-            asyncore.loop(10)
+            while True:
+                try:
+                    req = self.queue.get(block=False)
+                    req.connect()
+                except Queue.Empty, e:
+                    break
+            asyncore.loop()
 
 class TileRequest(AsyncHTTPConnection):
     def __init__(self, handler, host, port, url, tile_args):
