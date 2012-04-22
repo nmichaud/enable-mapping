@@ -62,7 +62,7 @@ class HTTPTileManager(HasTraits):
     _last_zoom_seen = Int
     
     _thread = Any
-    _request_queue = Instance(Queue.LifoQueue, ())
+    _request_queue = Instance(Queue.Queue)
     
     @on_trait_change('server, url')
     def _reset_cache(self, new):
@@ -78,6 +78,9 @@ class HTTPTileManager(HasTraits):
 
     def __thread_default(self):
         return RequestingThread(self._request_queue)
+
+    def __request_queue_default(self):
+        return TileRequestQueue()
     
 class RequestingThread(Thread):
     def __init__(self, queue):
@@ -88,12 +91,11 @@ class RequestingThread(Thread):
     def run(self):
         # Wait for any requests
         while True:
-            while True:
-                try:
-                    req = self.queue.get(block=False)
-                    req.connect()
-                except Queue.Empty, e:
-                    break
+            try:
+                reqs = self.queue.get_all(block=False)
+                for req in reqs: req.connect()
+            except Queue.Empty, e:
+                pass
             asyncore.loop()
 
 class TileRequest(AsyncHTTPConnection):
@@ -119,4 +121,47 @@ class TileRequest(AsyncHTTPConnection):
     
     def __str__(self):
         return "TileRequest for %s"%str(self._tile_args)
+
+    def __repr__(self):
+        return str(self)
+
+class TileRequestQueue(Queue.LifoQueue):
+    def get_all(self, block=True, timeout=None):
+        """Remove and return all items from the queue.
+
+        If optional args 'block' is true and 'timeout' is None (the default),
+        block if necessary until an item is available. If 'timeout' is
+        a positive number, it blocks at most 'timeout' seconds and raises
+        the Empty exception if no item was available within that time.
+        Otherwise ('block' is false), return an item if one is immediately
+        available, else raise the Empty exception ('timeout' is ignored
+        in that case).
+        """
+        self.not_empty.acquire()
+        try:
+            if not block:
+                if not self._qsize():
+                    raise Queue.Empty
+            elif timeout is None:
+                while not self._qsize():
+                    self.not_empty.wait()
+            elif timeout < 0:
+                raise ValueError("'timeout' must be a positive number")
+            else:
+                endtime = _time() + timeout
+                while not self._qsize():
+                    remaining = endtime - _time()
+                    if remaining <= 0.0:
+                        raise Queue.Empty
+                    self.not_empty.wait(remaining)
+            items = self._get_all()
+            self.not_full.notify()
+            return items
+        finally:
+            self.not_empty.release()
+
+    def _get_all(self):
+        all = self.queue[:]
+        self.queue = []
+        return all
 
