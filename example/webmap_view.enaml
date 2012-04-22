@@ -1,0 +1,16 @@
+
+enamldef Main(MainWindow):
+    attr model
+    title = "Mapping Demo"
+    Container:
+        Form:
+            id: info
+            Label:
+                text = 'Tile server'
+            ComboBox:
+                value := model.server
+                items << sorted(model.servers.keys())
+        EnableCanvas:
+            id: map
+            constraints = [width >= 600, height >= 400]
+            component << model.viewport

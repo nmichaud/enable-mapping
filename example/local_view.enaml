@@ -1,0 +1,9 @@
+
+enamldef Main(MainWindow):
+    attr model
+    title = "MBTile Mapping Demo"
+    Container:
+        EnableCanvas:
+            id: map
+            constraints = [width >= 600, height >= 400]
+            component << model.viewport
