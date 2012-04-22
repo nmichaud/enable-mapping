@@ -1,0 +1,13 @@
+*.pyc
+*.un~
+*.swp
+*.egg-info
+*.so
+*.DS_Store
+*.enamlc
+/build
+/dist
+/docs/build
+
+.gitignore~
+*.orig
