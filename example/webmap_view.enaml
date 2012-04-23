@@ -1,7 +1,7 @@
 
 enamldef Main(MainWindow):
     attr model
-    title = "Mapping Demo"
+    title << model.title if hasattr(model, 'title') else "Mapping Demo"
     Container:
         Form:
             id: info

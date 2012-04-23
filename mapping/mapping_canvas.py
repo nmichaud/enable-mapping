@@ -71,21 +71,26 @@ class MappingCanvas(Canvas):
                     gc.draw_image(self.tile_cache.get_tile(zoom, row, col), (tx,ty,tile_size, tile_size))
         super(MappingCanvas, self)._draw_underlay(gc, view_bounds, mode)
 
-    def _coord_to_tilenum(self, lat, lon, zoom):
+    def transformToScreen(self, lon, lat):
+        return self._WGS84_to_screen(lon, lat, self.zoom_level)
+    
+    def _WGS84_to_screen(self, lon, lat, zoom):
         """
          lat = Latitude in degrees
          lon = Longitute in degrees
          zoom = zoom level
         """
         lat_rad = math.radians(lat)
-        n = 2.0 ** zoom
-        col = int((lon + 180.0) / 360.0 * n)
-        row = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) 
-                    / 2.0 * n)
-        return (col, row)
+        mapsize = self.tile_cache.get_tile_size() << zoom
+        x = (lon + 180.0) / 360.0 * mapsize
+        y = (1- (1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) 
+                    / 2.0) * mapsize
+        return (x, y)
 
-
-    def _tilenum_to_coord(self, col, row, zoom):
+    def _screen_to_WGS84(self, x, y, zoom):
+        """ This is currently incorrect - needs to use screen coords
+        """
+        mapsize = self.tile_cache.get_tile_size() << zoom
         n = 2.0 ** zoom
         lon_deg = col / n * 360.0 - 180.0
         lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * row / n)))

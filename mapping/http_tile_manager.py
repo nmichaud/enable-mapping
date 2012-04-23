@@ -50,12 +50,6 @@ class HTTPTileManager(TileManager):
         # return a blank tile for now
         return self._blank_tile
 
-    def _tile_received(self, tile_args, data):
-        self._scheduled.remove(tile_args)
-        self._cache[tile_args] = Image(StringIO(data))
-        zoom, col, row = tile_args
-        self.tile_ready = (zoom, col, row)
-    
     #### Public interface #################################################
 
     server = Str
@@ -71,6 +65,12 @@ class HTTPTileManager(TileManager):
     _thread = Any
     _request_queue = Instance(Queue.Queue)
     
+    def _tile_received(self, tile_args, data):
+        self._scheduled.remove(tile_args)
+        self._cache[tile_args] = Image(StringIO(data))
+        zoom, col, row = tile_args
+        self.tile_ready = (zoom, col, row)
+
     @on_trait_change('server, url')
     def _reset_cache(self, new):
         self._cache.clear()
