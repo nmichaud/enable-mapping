@@ -10,8 +10,6 @@ from enable.api import Canvas
 # Local imports
 from i_tile_manager import ITileManager
 
-TILE_SIZE = 256
-
 class MappingCanvas(Canvas):
     """
     An infinite tiled canvas for showing maps
@@ -56,39 +54,23 @@ class MappingCanvas(Canvas):
             gc.clip_to_rect(x,y,width, height)
 
             # Tile image
-            startx = int(x) / TILE_SIZE * TILE_SIZE
-            starty = int(y) / TILE_SIZE * TILE_SIZE
+            tile_size = self.tile_cache.get_tile_size()
+            startx = int(x) / tile_size * tile_size
+            starty = int(y) / tile_size * tile_size
             endx = int(x+width)
             endy = int(y+height)
 
-            lim = 2**zoom * TILE_SIZE
+            lim = 2**zoom * tile_size
 
             if starty < 0: starty = 0
             if endy > lim: endy = lim
 
-            for tx in range(startx, endx, TILE_SIZE):
-                for ty in range(starty, endy, TILE_SIZE):
-                    zoom, row, col = self._convert_to_tilenum(tx, ty, zoom)
-                    gc.draw_image(self.tile_cache.get_tile(zoom, row, col), (tx,ty,TILE_SIZE, TILE_SIZE))
-
-        if False: # Draw axis
-            if (x <= 0 <= x+width) or (y <= 0 <= y+height):
-                gc.set_stroke_color((0,0,0,1))
-                gc.set_line_width(1.0)
-                gc.move_to(0, y)
-                gc.line_to(0, y+height) 
-                gc.move_to(x, 0)
-                gc.line_to(x+width, 0)
-                gc.stroke_path()
+            for tx in range(startx, endx, tile_size):
+                for ty in range(starty, endy, tile_size):
+                    zoom, row, col = self.tile_cache.convert_to_tilenum(tx, ty, zoom)
+                    gc.draw_image(self.tile_cache.get_tile(zoom, row, col), (tx,ty,tile_size, tile_size))
         super(MappingCanvas, self)._draw_underlay(gc, view_bounds, mode)
 
-    def _convert_to_tilenum(self, x, y, zoom):
-        n = 2 ** zoom
-        col = (x / TILE_SIZE % n)
-        row = (n - 1 - (y / TILE_SIZE % n))
-        #row = (y / TILE_SIZE % n)
-        return (zoom, col, row)
-    
     def _coord_to_tilenum(self, lat, lon, zoom):
         """
          lat = Latitude in degrees
@@ -109,5 +91,3 @@ class MappingCanvas(Canvas):
         lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * row / n)))
         lat_deg = math.degrees(lat_rad)
         return (lat_deg, lon_deg)
-
-

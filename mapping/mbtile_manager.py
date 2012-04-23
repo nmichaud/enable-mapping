@@ -7,11 +7,12 @@ from kiva.image import Image
 
 # Local imports
 from i_tile_manager import ITileManager
+from tile_manager import TileManager
 from cacheing_decorators import lru_cache
 from mbtiles import MbtileSet
 
 
-class MBTileManager(HasTraits):
+class MBTileManager(TileManager):
 
     implements(ITileManager)
     
@@ -22,6 +23,16 @@ class MBTileManager(HasTraits):
         data = tile.get_png()
         if not data: return self._blank_tile
         else: return Image(StringIO(data))
+
+    def get_tile_size(self):
+        return 256
+
+    def convert_to_tilenum(self, x, y, zoom):
+        n = 2 ** zoom
+        size = self.get_tile_size()
+        col = (x / size % n)
+        row = (y / size % n)
+        return (zoom, col, row)
     
     #### Public interface #################################################
 
@@ -29,20 +40,11 @@ class MBTileManager(HasTraits):
     
     ### Private interface ##################################################
     
-    _blank_tile = Instance(Image)
-
     _tileset = Instance(MbtileSet)
 
     def _filename_changed(self, new):
         self._tileset = MbtileSet(mbtiles=new)
         self.get_tile.clear()
 
-    def __blank_tile_default(self):
-        import Image as pil
-        tile = StringIO()
-        pil.new('RGB', (256, 256), (234, 224, 216)).save(tile, format='png')
-        return Image(StringIO(tile.getvalue()))
-
     def __tileset_default(self):
         return MbtileSet(mbtiles=self.filename)
-

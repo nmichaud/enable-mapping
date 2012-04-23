@@ -12,18 +12,27 @@ from pyface.gui import GUI
 
 # Local imports
 from i_tile_manager import ITileManager
+from tile_manager import TileManager
 from asynchttp import AsyncHTTPConnection
 
-class HTTPTileManager(HasTraits):
+class HTTPTileManager(TileManager):
 
     implements(ITileManager)
     
     #### ITileManager interface ###########################################
 
-    tile_ready = Event
-
     def start(self):
         self._thread.start()
+
+    def get_tile_size(self):
+        return 256
+
+    def convert_to_tilenum(self, x, y, zoom):
+        n = 2 ** zoom
+        size = self.get_tile_size()
+        col = (x / size % n)
+        row = (n - 1 - y / size % n)
+        return (zoom, col, row)
 
     def get_tile(self, zoom, row, col):
         # Schedule a request to get the tile
@@ -55,8 +64,6 @@ class HTTPTileManager(HasTraits):
 
     ### Private interface ##################################################
     
-    _blank_tile = Instance(Image)
-
     _cache = Dict
     _scheduled = Set
     _last_zoom_seen = Int
@@ -69,12 +76,6 @@ class HTTPTileManager(HasTraits):
         self._cache.clear()
         # This is a hack to repaint
         self.tile_ready = 0,0,0
-
-    def __blank_tile_default(self):
-        import Image as pil
-        tile = StringIO()
-        pil.new('RGB', (256, 256), (234, 224, 216)).save(tile, format='png')
-        return Image(StringIO(tile.getvalue()))
 
     def __thread_default(self):
         return RequestingThread(self._request_queue)
