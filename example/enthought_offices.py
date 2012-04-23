@@ -64,8 +64,8 @@ def main():
 
     for city in [nyc, austin, cambridge, mumbai]:
         canvas.add(GeoMarker(geoposition=city, 
-                         filename='example/enthought.png',
-                         anchor=(27, 0)))
+                         filename='example/enthought-marker.png',
+                         )))
 
     canvas.zoom_level = 2
     viewport.view_position = (180, 390)
