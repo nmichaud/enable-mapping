@@ -24,6 +24,19 @@ class MappingCanvas(Canvas):
     def _tile_ready(self, (zoom, row, col)):
         self.request_redraw()
 
+    def _draw_background(self, gc, view_bounds=None, mode="default"):
+        if self.bgcolor not in ("clear", "transparent", "none"):
+            with gc: 
+                gc.set_antialias(False)
+                gc.set_fill_color(self.bgcolor_)
+                gc.draw_rect(view_bounds, FILL)
+
+        # Call the enable _draw_border routine
+        if not self.overlay_border and self.border_visible:
+            # Tell _draw_border to ignore the self.overlay_border
+            self._draw_border(gc, view_bounds, mode, force_draw=True)
+        return
+
     def _draw_underlay(self, gc, view_bounds=None, mode="default"):
         x, y, width, height = view_bounds
         zoom = self._zoom_level
