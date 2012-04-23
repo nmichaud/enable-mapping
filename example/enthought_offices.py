@@ -51,11 +51,8 @@ def main():
     canvas = MappingCanvas(bgcolor="lightsteelblue", 
                            tile_cache = manager)
 
-    viewport = MappingViewport(component=canvas, 
-                        stay_inside=True)
+    viewport = MappingViewport(component=canvas)
     viewport.tools.append(ViewportPanTool(viewport))
-    viewport.zoom_tool = MappingZoomTool(viewport)
-    viewport.enable_zoom = True
 
     nyc = (40.7546423, -73.9748948)
     austin = (30.267651, -97.7424769)

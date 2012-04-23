@@ -48,11 +48,8 @@ def main():
     canvas = MappingCanvas(bgcolor="lightsteelblue", 
                            tile_cache = manager)
 
-    viewport = MappingViewport(component=canvas, 
-                        stay_inside=True)
+    viewport = MappingViewport(component=canvas)
     viewport.tools.append(ViewportPanTool(viewport))
-    viewport.zoom_tool = MappingZoomTool(viewport)
-    viewport.enable_zoom = True
 
     viewport.zoom_level = 12
     viewport.view_position = (308500, 654200)

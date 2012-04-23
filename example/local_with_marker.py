@@ -4,7 +4,6 @@ from traits.api import HasTraits, Instance, Str, List, Property, Dict
 
 from mapping.mapping_viewport import MappingViewport
 from mapping.mapping_canvas import MappingCanvas
-from mapping.mapping_zoom import MappingZoomTool
 
 from mapping.mbtile_manager import MBTileManager
 
@@ -29,11 +28,8 @@ def main():
     canvas.add(GeoMarker(filename='example/enthought-marker.png',
                          geoposition = (40.7546423, -73.9748948)))
 
-    viewport = MappingViewport(component=canvas, 
-                        stay_inside=True)
+    viewport = MappingViewport(component=canvas)
     viewport.tools.append(ViewportPanTool(viewport))
-    viewport.zoom_tool = MappingZoomTool(viewport)
-    viewport.enable_zoom = True
 
     model = Model(canvas=canvas, viewport=viewport)
 

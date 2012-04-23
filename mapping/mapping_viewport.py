@@ -1,11 +1,12 @@
 
 from numpy import array
-from traits.api import Instance, Int, Property, Float, DelegatesTo
+from traits.api import Instance, Bool, Int, Property, Float, DelegatesTo
 from enable.viewport import Viewport
 from enable.base import empty_rectangle, intersect_bounds
 from enable.enable_traits import coordinate_trait
 
 from mapping_canvas import MappingCanvas
+from mapping_zoom import MappingZoomTool
 
 class MappingViewport(Viewport):
 
@@ -21,6 +22,20 @@ class MappingViewport(Viewport):
     min_level = Property(lambda self: self.tile_cache.min_level)
     max_level = Property(lambda self: self.tile_cache.max_level)
 
+    zoom_tool = Instance(MappingZoomTool)
+
+    enable_zoom = Bool(True)
+    stay_inside = Bool(True)
+
+    def __init__(self, **traits):
+        # Skip parent constructor
+        super(Viewport, self).__init__(**traits)
+        self._update_component_view_bounds()
+        self.zoom_tool = MappingZoomTool(self)
+        if self.enable_zoom:
+            self._enable_zoom_changed(False, True)
+        return
+
     def _get_latitude(self):
         return self.geoposition[0]
     def _set_latitude(self, val):
@@ -35,6 +50,9 @@ class MappingViewport(Viewport):
         lat, lon = new 
         tilex, tiley = self._coord_to_tilenum(lat, lon, self.zoom_level)
         #self.request_redraw()
+    
+    def _zoom_level_changed(self):
+        self.request_redraw()
 
     def _draw_mainlayer(self, gc, view_bounds=None, mode="normal"):
 
@@ -89,7 +107,4 @@ class MappingViewport(Viewport):
                         self.component._zoom_level = self.zoom_level
                         self.component.draw(gc, new_bounds, mode=mode)
         return
-
-    def _zoom_level_changed(self):
-        self.request_redraw()
 
