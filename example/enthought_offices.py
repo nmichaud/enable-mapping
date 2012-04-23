@@ -1,8 +1,8 @@
 
-from enable.api import Viewport
 from enable.tools.api import ViewportPanTool
 from traits.api import HasTraits, Instance, Str, List, Property, Dict
 
+from mapping.mapping_viewport import MappingViewport
 from mapping.mapping_canvas import MappingCanvas
 from mapping.mapping_zoom import MappingZoomTool
 
@@ -15,7 +15,7 @@ class Model(HasTraits):
     title = Str("Enthought Offices Worldwide")
 
     canvas = Instance(MappingCanvas)
-    viewport = Instance(Viewport)
+    viewport = Instance(MappingViewport)
 
     server = Str
     servers = Dict
@@ -51,7 +51,7 @@ def main():
     canvas = MappingCanvas(bgcolor="lightsteelblue", 
                            tile_cache = manager)
 
-    viewport = Viewport(component=canvas, 
+    viewport = MappingViewport(component=canvas, 
                         stay_inside=True)
     viewport.tools.append(ViewportPanTool(viewport))
     viewport.zoom_tool = MappingZoomTool(viewport)
@@ -65,9 +65,9 @@ def main():
     for city in [nyc, austin, cambridge, mumbai]:
         canvas.add(GeoMarker(geoposition=city, 
                          filename='example/enthought-marker.png',
-                         )))
+                         ))
 
-    canvas.zoom_level = 2
+    viewport.zoom_level = 2
     viewport.view_position = (180, 390)
 
     model = Model(canvas=canvas, viewport=viewport)

@@ -15,41 +15,18 @@ class MappingCanvas(Canvas):
     An infinite tiled canvas for showing maps
     """
 
-    zoom_level = Int(0)
-
-    geoposition = Tuple(Float, Float)
-    latitude = Property(Float, depends_on='geoposition')
-    longitude = Property(Float, depends_on='geoposition')
-    
-    resizable = "hv"
-
     tile_cache = Instance(ITileManager)
-
-    def _get_latitude(self):
-        return self.geoposition[0]
-    def _set_latitude(self, val):
-        self.geoposition[0] = val
-
-    def _get_longitude(self):
-        return self.geoposition[1]
-    def _set_longitude(self, val):
-        self.geoposition[1] = val
-
-    def _geoposition_changed(self, old, new):
-        lat, lon = new
-        tilex, tiley = self._coord_to_tilenum(lat, lon, self.zoom_level)
-        self.request_redraw()
-
-    def _zoom_level_changed(self, old, new):
-        self.request_redraw()
     
+    # FIXME This is a hack - remove when viewport is fixed
+    _zoom_level = Int(0)
+
     @on_trait_change('tile_cache:tile_ready')
     def _tile_ready(self, (zoom, row, col)):
         self.request_redraw()
 
     def _draw_underlay(self, gc, view_bounds=None, mode="default"):
         x, y, width, height = view_bounds
-        zoom = self.zoom_level
+        zoom = self._zoom_level
         with gc:
             gc.clip_to_rect(x,y,width, height)
 
@@ -72,7 +49,7 @@ class MappingCanvas(Canvas):
         super(MappingCanvas, self)._draw_underlay(gc, view_bounds, mode)
 
     def transformToScreen(self, lon, lat):
-        return self._WGS84_to_screen(lon, lat, self.zoom_level)
+        return self._WGS84_to_screen(lon, lat, self._zoom_level)
     
     def _WGS84_to_screen(self, lon, lat, zoom):
         """

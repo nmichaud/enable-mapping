@@ -1,8 +1,8 @@
 
-from enable.api import Viewport
 from enable.tools.api import ViewportPanTool
 from traits.api import HasTraits, Instance, Str, List, Property, Dict
 
+from mapping.mapping_viewport import MappingViewport
 from mapping.mapping_canvas import MappingCanvas
 from mapping.mapping_zoom import MappingZoomTool
 
@@ -13,7 +13,7 @@ from mapping.primitives.api import GeoMarker
 class Model(HasTraits):
 
     canvas = Instance(MappingCanvas)
-    viewport = Instance(Viewport)
+    viewport = Instance(MappingViewport)
 
     filename = Str
 
@@ -29,7 +29,7 @@ def main():
     canvas.add(GeoMarker(filename='example/enthought-marker.png',
                          geoposition = (40.7546423, -73.9748948)))
 
-    viewport = Viewport(component=canvas, 
+    viewport = MappingViewport(component=canvas, 
                         stay_inside=True)
     viewport.tools.append(ViewportPanTool(viewport))
     viewport.zoom_tool = MappingZoomTool(viewport)

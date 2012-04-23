@@ -1,8 +1,8 @@
 
-from enable.api import Viewport
 from enable.tools.api import ViewportPanTool
 from traits.api import HasTraits, Instance, Str, List, Property, Dict
 
+from mapping.mapping_viewport import MappingViewport
 from mapping.mapping_canvas import MappingCanvas
 from mapping.mapping_zoom import MappingZoomTool
 
@@ -12,7 +12,7 @@ from mapping.http_tile_manager import HTTPTileManager
 class Model(HasTraits):
 
     canvas = Instance(MappingCanvas)
-    viewport = Instance(Viewport)
+    viewport = Instance(MappingViewport)
 
     server = Str
     servers = Dict
@@ -48,13 +48,13 @@ def main():
     canvas = MappingCanvas(bgcolor="lightsteelblue", 
                            tile_cache = manager)
 
-    viewport = Viewport(component=canvas, 
+    viewport = MappingViewport(component=canvas, 
                         stay_inside=True)
     viewport.tools.append(ViewportPanTool(viewport))
     viewport.zoom_tool = MappingZoomTool(viewport)
     viewport.enable_zoom = True
 
-    canvas.zoom_level = 12
+    viewport.zoom_level = 12
     viewport.view_position = (308500, 654200)
 
     model = Model(canvas=canvas, viewport=viewport)

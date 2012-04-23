@@ -1,16 +1,12 @@
 
-from traits.api import DelegatesTo
-
+from traits.api import DelegatesTo, Property
 from enable.tools.viewport_zoom_tool import ViewportZoomTool
 
 class MappingZoomTool(ViewportZoomTool):
 
-    zoom_level = DelegatesTo('canvas')
-    canvas = DelegatesTo('component', 'component')
-    manager = DelegatesTo('canvas', 'tile_cache')
-
-    min_level = DelegatesTo('manager')
-    max_level = DelegatesTo('manager')
+    zoom_level = DelegatesTo('component')
+    min_level = Property(lambda self: self.component.min_level)
+    max_level = Property(lambda self: self.component.max_level)
 
     def _min_zoom_default(self):
         if self.zoom_level == self.min_level: return 1.0
