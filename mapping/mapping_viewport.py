@@ -1,6 +1,6 @@
 
 from numpy import array
-from traits.api import Instance, Bool, Int, Property, Float, DelegatesTo
+from traits.api import Instance, Bool, Int, Property, Float, DelegatesTo, on_trait_change
 from enable.viewport import Viewport
 from enable.base import empty_rectangle, intersect_bounds
 from enable.enable_traits import coordinate_trait
@@ -34,7 +34,7 @@ class MappingViewport(Viewport):
         self.zoom_tool = MappingZoomTool(self)
         if self.enable_zoom:
             self._enable_zoom_changed(False, True)
-        return
+        self._update_position(self, 'geoposition', None, (0., 0.))
 
     def _get_latitude(self):
         return self.geoposition[0]
@@ -46,13 +46,13 @@ class MappingViewport(Viewport):
     def _set_longitude(self, val):
         self.geoposition[1] = val 
 
-    def _geoposition_changed(self, old, new):
-        lat, lon = new 
-        tilex, tiley = self._coord_to_tilenum(lat, lon, self.zoom_level)
-        #self.request_redraw()
-    
-    def _zoom_level_changed(self):
-        self.request_redraw()
+    @on_trait_change('geoposition, bounds, bounds_items, zoom_level')
+    def _update_position(self, object, name, old, new):
+        # Update position
+        lat, lon = self.geoposition
+        x, y = self.component._WGS84_to_screen(lon, lat, self.zoom_level)
+        w, h = self.view_bounds
+        self.view_position = [x - w/2., y - h/2.]
 
     def _draw_mainlayer(self, gc, view_bounds=None, mode="normal"):
 
