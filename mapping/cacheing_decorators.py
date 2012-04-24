@@ -9,7 +9,7 @@ class Counter(dict):
     def __missing__(self, key):
         return 0
 
-def lru_cache(maxsize=100):
+def lru_cache(maxsize=1024):
     '''Least-recently-used cache decorator.
 
     Arguments to the cached function must be hashable.
@@ -34,7 +34,7 @@ def lru_cache(maxsize=100):
         @functools.wraps(user_function)
         def wrapper(*args, **kwds):
             # cache key records both positional and keyword args
-            key = args
+            key = args[1:]
             if kwds:
                 key += (kwd_mark,) + tuple(sorted(kwds.items()))
 
@@ -70,8 +70,17 @@ def lru_cache(maxsize=100):
                     queue_appendleft(key)
                     refcount[key] = 1
 
-
             return result
+
+        def replace(value, *args, **kwds):
+            # replace a value to the cache
+
+            # cache key records both positional and keyword args
+            key = args
+            if kwds:
+                key += (kwd_mark,) + tuple(sorted(kwds.items()))
+
+            cache[key] = value
 
         def clear():
             cache.clear()
@@ -81,6 +90,7 @@ def lru_cache(maxsize=100):
 
         wrapper.hits = wrapper.misses = 0
         wrapper.clear = clear
+        wrapper.replace = replace
         return wrapper
     return decorating_function
 

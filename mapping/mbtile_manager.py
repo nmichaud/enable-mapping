@@ -17,7 +17,7 @@ class MBTileManager(TileManager):
     implements(ITileManager)
     
     #### ITileManager interface ###########################################
-    @lru_cache(500)
+    @lru_cache()
     def get_tile(self, zoom, row, col):
         tile = self._tileset.get_tile(zoom, row, col)
         data = tile.get_png()

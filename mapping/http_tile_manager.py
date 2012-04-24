@@ -13,6 +13,7 @@ from pyface.gui import GUI
 # Local imports
 from i_tile_manager import ITileManager
 from tile_manager import TileManager
+from cacheing_decorators import lru_cache
 from asynchttp import AsyncHTTPConnection
 
 class HTTPTileManager(TileManager):
@@ -34,19 +35,12 @@ class HTTPTileManager(TileManager):
         row = (n - 1 - y / size % n)
         return (zoom, col, row)
 
+    @lru_cache()
     def get_tile(self, zoom, row, col):
         # Schedule a request to get the tile
-        key = (zoom, row, col)
-        tile = self._cache.get(key)
-        if tile:
-            return tile
-        
-        # don't have the tile, put in a request to fetch it
-        if not key in self._scheduled:
-            self._request_queue.put(TileRequest(self._tile_received,
-                            self.server, self.port, self.url, key))
-            self._scheduled.add(key)
-        
+        self._request_queue.put(TileRequest(self._tile_received,
+                        self.server, self.port, self.url,
+                        (zoom, row, col)))
         # return a blank tile for now
         return self._blank_tile
 
@@ -58,22 +52,17 @@ class HTTPTileManager(TileManager):
 
     ### Private interface ##################################################
     
-    _cache = Dict
-    _scheduled = Set
-    _last_zoom_seen = Int
-    
     _thread = Any
     _request_queue = Instance(Queue.Queue)
     
-    def _tile_received(self, tile_args, data):
-        self._scheduled.remove(tile_args)
-        self._cache[tile_args] = Image(StringIO(data))
-        zoom, col, row = tile_args
-        self.tile_ready = (zoom, col, row)
+    def _tile_received(self, (zoom, row, col), data):
+        tile = Image(StringIO(data))
+        self.get_tile.replace(tile, zoom, row, col)
+        self.tile_ready = (zoom, row, col)
 
     @on_trait_change('server, url')
     def _reset_cache(self, new):
-        self._cache.clear()
+        self.get_tile.clear()
         # This is a hack to repaint
         self.tile_ready = 0,0,0
 
