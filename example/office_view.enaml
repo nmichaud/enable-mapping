@@ -1,0 +1,57 @@
+
+import math
+import itertools
+
+from enaml.stdlib.fields import FloatField
+
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return itertools.izip(a, b)
+
+def grouper(n, iterable, fillvalue=None):
+    "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return itertools.imap(lambda f: filter(lambda i: i != None, f),
+                          itertools.izip_longest(fillvalue=fillvalue, *args))
+
+def _generate_grid(children, hbox, vbox, spacer):
+    # Find closest square number
+    num_sqrt = math.sqrt(len(children))
+    grid = int(math.ceil(num_sqrt))
+    constraints = []
+    if grid:
+        rows = grouper(grid, children)
+        if grid - num_sqrt:
+            hboxes = [hbox(*row) for row in itertools.islice(rows, grid-2)] + [hbox(*(rows.next() +(spacer,)))]
+        else:
+            hboxes = [hbox(*row) for row in rows]
+        constraints.append(vbox(*hboxes))
+
+        for c1, c2 in pairwise(children):
+            constraints.append(c1.width == c2.width)
+            constraints.append(c1.height == c2.height)
+    return constraints
+
+enamldef Map(Container):
+    attr office
+    attr viewport
+    constraints = [
+                   vbox(hbox(spacer, city, spacer), map_canvas),
+                   align('h_center', city, map_canvas),
+                   map_canvas.width >= 256, map_canvas.height >= 256]
+    Label:
+        id: city
+        text = office.city
+    EnableCanvas:
+        id: map_canvas
+        component << viewport
+
+enamldef Main(MainWindow):
+    attr model
+    title << model.title if hasattr(model, 'title') else "Mapping Demo"
+    GroupBox:
+        constraints << _generate_grid(constraints_children, hbox, vbox, spacer)
+        Include:
+            components << [Map(office=o, viewport=v) for o, v in zip(model.offices, model.viewports)]
