@@ -5,7 +5,7 @@ import math
 from traits.api import Tuple, Int, Float, Instance, Property, on_trait_change
 
 from kiva.constants import FILL
-from enable.api import Canvas
+from enable.api import Canvas, ColorTrait
 
 # Local imports
 from i_tile_manager import ITileManager
@@ -16,6 +16,8 @@ class MappingCanvas(Canvas):
     """
 
     tile_cache = Instance(ITileManager)
+
+    bgcolor = ColorTrait("lightsteelblue")
     
     # FIXME This is a hack - remove when viewport is fixed
     _zoom_level = Int(0)
