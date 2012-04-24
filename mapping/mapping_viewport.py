@@ -28,6 +28,8 @@ class MappingViewport(Viewport):
     enable_zoom = Bool(True)
     stay_inside = Bool(True)
 
+    draw_cross = Bool(True)
+
     def __init__(self, **traits):
         # Skip parent constructor
         super(Viewport, self).__init__(**traits)
@@ -58,6 +60,22 @@ class MappingViewport(Viewport):
         w, h = self.bounds
         lat, lon = self.component._screen_to_WGS84(x+w/2., y+h/2., self.zoom_level)
         self.trait_set(geoposition = [lat, lon])
+
+    def _draw_overlay(self, gc, view_bounds=None, mode="normal"):
+        if self.draw_cross:
+            x, y, width, height = view_bounds
+            with gc:
+                # draw +
+                size = 10
+                gc.set_stroke_color((0,0,0,1))
+                gc.set_line_width(1.0)
+                cx, cy = x+width/2., y+height/2.
+                gc.move_to(cx, cy-size)
+                gc.line_to(cx, cy+size)
+                gc.move_to(cx-size, cy)
+                gc.line_to(cx+size, cy)
+                gc.stroke_path()
+        super(MappingViewport, self)._draw_overlay(gc, view_bounds, mode)
 
     def _draw_mainlayer(self, gc, view_bounds=None, mode="normal"):
 
