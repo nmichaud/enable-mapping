@@ -5,6 +5,7 @@ from traits.api import HasTraits, Instance, Str, List, Property, Dict
 from mapping.mapping_viewport import MappingViewport
 from mapping.mapping_canvas import MappingCanvas
 from mapping.mapping_zoom import MappingZoomTool
+from mapping.primitives.api import GeoCircle
 
 from mapping.http_tile_manager import HTTPTileManager
 
@@ -47,9 +48,12 @@ def main():
 
     canvas = MappingCanvas(tile_cache = manager)
 
+    nyc = (40.7546423, -73.9748948)
+    canvas.add(GeoCircle(radius=4, geoposition=nyc))
+
     viewport = MappingViewport(component=canvas)
     viewport.tools.append(ViewportPanTool(viewport))
-    viewport.set(zoom_level = 12, geoposition = (40.7546423, -73.9748948))
+    viewport.set(zoom_level=12, geoposition=nyc)
 
     model = SingleMap(canvas=canvas, viewport=viewport)
     model.server = 'MapBox Simple'

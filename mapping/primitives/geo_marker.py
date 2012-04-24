@@ -25,20 +25,12 @@ class GeoMarker(GeoPrimitive):
     # Protected 'Component' interface.
     ###########################################################################
 
-    def _draw_mainlayer(self, gc, view_bounds=None, mode='default'):
+    def _render_primitive(self, gc, view_bounds=None, mode='default'):
         """ Draw the component. """
-        with gc: 
-            x, y = self.position
-            anchor_x, anchor_y = self.anchor
+        x, y = self.position
+        anchor_x, anchor_y = self.anchor
 
-            # FIXME - this is broken when there are multiple
-            # viewports
-            zoom = max([v.zoom for v in self.container.viewports])
+        w, h = self._marker.width(), self._marker.height()
+        gc.draw_image(self._marker, (x-anchor_x*w, y-anchor_y*h, w, h))
 
-            gc.scale_ctm(1./zoom, 1./zoom)
-            gc.translate_ctm(-x*(1-zoom), -y*(1-zoom))
-
-            w, h = self._marker.width(), self._marker.height()
-            gc.draw_image(self._marker, (x-anchor_x*w, y-anchor_y*h, w, h))
         return
-

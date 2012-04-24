@@ -1,4 +1,5 @@
 
+import math
 from traits.api import Float
 
 from geo_primitive import GeoPrimitive
@@ -36,19 +37,15 @@ class GeoCircle(GeoPrimitive):
     # Protected 'Component' interface.
     ###########################################################################
 
-    def _draw_mainlayer(self, gc, view_bounds=None, mode='default'):
-        """ Draw the component. """
-        with gc: 
-            gc.set_fill_color(self._get_fill_color(self.event_state))
+    def _render_primitive(self, gc, view_bounds=None, mode='default'):
+        gc.set_fill_color(self._get_fill_color(self.event_state))
 
-            x, y = self.position
-            gc.arc(x + self.radius, y + self.radius, self.radius, 0, 2*3.14159, False)
-            gc.fill_path()
+        x, y = self.position
+        gc.arc(x + self.radius, y + self.radius, self.radius, 0, 2*math.pi, False)
+        gc.fill_path()
 
-            # Draw the shape's text.
-            self._draw_text(gc)
-
-        return
+        # Draw the shape's text.
+        self._draw_text(gc)
 
     ###########################################################################
     # 'Circle' interface.
