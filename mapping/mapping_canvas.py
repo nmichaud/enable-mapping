@@ -60,7 +60,7 @@ class MappingCanvas(Canvas):
             for tx in range(startx, endx, tile_size):
                 for ty in range(starty, endy, tile_size):
                     zoom, row, col = self.tile_cache.convert_to_tilenum(tx, ty, zoom)
-                    gc.draw_image(self.tile_cache.get_tile(zoom, row, col), (tx,ty,tile_size, tile_size))
+                    gc.draw_image(self.tile_cache.get_tile(zoom, row, col), (tx,ty,tile_size+1, tile_size+1))
         super(MappingCanvas, self)._draw_underlay(gc, view_bounds, mode)
 
     def transformToScreen(self, lon, lat):
