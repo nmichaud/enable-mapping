@@ -9,10 +9,7 @@ from mapping.mapping_zoom import MappingZoomTool
 from mapping.http_tile_manager import HTTPTileManager
 
 
-class Model(HasTraits):
-
-    canvas = Instance(MappingCanvas)
-    viewport = Instance(MappingViewport)
+class WebModel(HasTraits):
 
     server = Str
     servers = Dict
@@ -39,22 +36,22 @@ class Model(HasTraits):
             ]
             )
 
+class SingleMap(WebModel):
+    
+    canvas = Instance(MappingCanvas)
+    viewport = Instance(MappingViewport)
+
 
 def main():
-    manager = HTTPTileManager(
-                              min_level = 0,
-                              max_level = 15)
+    manager = HTTPTileManager(min_level = 0, max_level = 15)
 
-    canvas = MappingCanvas(bgcolor="lightsteelblue", 
-                           tile_cache = manager)
+    canvas = MappingCanvas(tile_cache = manager)
 
     viewport = MappingViewport(component=canvas)
     viewport.tools.append(ViewportPanTool(viewport))
+    viewport.set(zoom_level = 12, geoposition = (40.7546423, -73.9748948))
 
-    viewport.zoom_level = 12
-    viewport.view_position = (308500, 654200)
-
-    model = Model(canvas=canvas, viewport=viewport)
+    model = SingleMap(canvas=canvas, viewport=viewport)
     model.server = 'MapBox Simple'
 
     import enaml

@@ -22,8 +22,7 @@ def main():
                               min_level = 0,
                               max_level = 3)
 
-    canvas = MappingCanvas(bgcolor="lightsteelblue", 
-                           tile_cache = manager)
+    canvas = MappingCanvas(tile_cache = manager)
 
     canvas.add(GeoMarker(filename='example/enthought-marker.png',
                          geoposition = (40.7546423, -73.9748948)))

@@ -21,8 +21,7 @@ def main():
                               min_level = 0,
                               max_level = 3)
 
-    canvas = MappingCanvas(bgcolor="lightsteelblue", 
-                           tile_cache = manager)
+    canvas = MappingCanvas(tile_cache = manager)
 
     viewport = MappingViewport(component=canvas)
     viewport.tools.append(ViewportPanTool(viewport))
