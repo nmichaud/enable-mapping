@@ -16,11 +16,16 @@ class GeoPrimitive(Shape):
     def _get_position(self):
         # Translate the geoposition to screen space
         lat, lon = self.geoposition
-        if self.container:  x, y = self.container.transformToScreen(lon, lat)
+        if self.container:  x, y = self.container.transformToScreen(lat, lon)
         else: x, y = 0., 0.
         # shift based on bounds
         w, h = self.bounds
-        return x-w/2, y-h/2
+        return x-w/2., y-h/2.
+
+    def _set_position(self, (x, y)):
+        lat_deg, lon_deg = self.container.transformToWGS84(x, y)
+        w, h = self.bounds
+        self.position = [x+w/2., y+h/2.]
 
     def _draw_mainlayer(self, gc, view_bounds=None, mode='default'):
         """ Draw the component. """

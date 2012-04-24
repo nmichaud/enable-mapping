@@ -67,9 +67,9 @@ class MappingZoomTool(ViewportZoomTool):
 
             self.component.zoom = new_zoom
 
-            self.component.set(view_position=[x_pos, y_pos], trait_change_notify=False)
             bounds = self.component.view_bounds
-            self.component.view_bounds = [bounds[0] / zoom , bounds[1] / zoom]
+            self.component.set(view_bounds = [bounds[0] / zoom , bounds[1] / zoom],
+                               view_position = [x_pos, y_pos])
 
             event.handled = True
             self.component.request_redraw()

@@ -1,8 +1,16 @@
 
+from enaml.stdlib.fields import FloatField
+
 enamldef Main(MainWindow):
     attr model
     title = "MBTile Mapping Demo"
     Container:
+        Form:
+            Label:
+                text = 'Coordinates (Latitude, Longitude)'
+            Field:
+                read_only = True
+                value << str(model.viewport.geoposition)
         EnableCanvas:
             id: map
             constraints = [width >= 600, height >= 400]

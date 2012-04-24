@@ -63,28 +63,28 @@ class MappingCanvas(Canvas):
                     gc.draw_image(self.tile_cache.get_tile(zoom, row, col), (tx,ty,tile_size+1, tile_size+1))
         super(MappingCanvas, self)._draw_underlay(gc, view_bounds, mode)
 
-    def transformToScreen(self, lon, lat):
-        return self._WGS84_to_screen(lon, lat, self._zoom_level)
+    def transformToScreen(self, lat_deg, lon_deg):
+        return self._WGS84_to_screen(lat_deg, lon_deg, self._zoom_level)
+
+    def transformToWSG84(self, x, y):
+        return self._screen_to_WGS84(x, y, self._zoom_level)
     
-    def _WGS84_to_screen(self, lon, lat, zoom):
+    def _WGS84_to_screen(self, lat_deg, lon_deg, zoom):
         """
          lat = Latitude in degrees
          lon = Longitute in degrees
          zoom = zoom level
         """
-        lat_rad = math.radians(lat)
+        lat_rad = math.radians(lat_deg)
         mapsize = self.tile_cache.get_tile_size() << zoom
-        x = (lon + 180.0) / 360.0 * mapsize
+        x = (lon_deg + 180.0) / 360.0 * mapsize
         y = (1- (1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) 
                     / 2.0) * mapsize
         return (x, y)
 
     def _screen_to_WGS84(self, x, y, zoom):
-        """ This is currently incorrect - needs to use screen coords
-        """
         mapsize = self.tile_cache.get_tile_size() << zoom
-        n = 2.0 ** zoom
-        lon_deg = col / n * 360.0 - 180.0
-        lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * row / n)))
+        lon_deg = (x * 360.0 / mapsize) - 180.0
+        lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * (1 - y / mapsize))))
         lat_deg = math.degrees(lat_rad)
         return (lat_deg, lon_deg)

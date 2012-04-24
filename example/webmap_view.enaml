@@ -10,6 +10,11 @@ enamldef Main(MainWindow):
             ComboBox:
                 value := model.server
                 items << sorted(model.servers.keys())
+            Label:
+                text = 'Coordinates (Latitude, Longitude)'
+            Field:
+                read_only = True
+                value << str(model.viewport.geoposition)
         EnableCanvas:
             id: map
             constraints = [width >= 600, height >= 400]
