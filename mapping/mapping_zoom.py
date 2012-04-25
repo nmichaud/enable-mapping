@@ -17,13 +17,12 @@ class MappingZoomTool(ViewportZoomTool):
         else: return 2.0
 
     def _zoom_level_changed(self, old, new):
+        self.min_zoom = 0.5
+        self.max_zoom = 2.0
         if new == self.min_level:
             self.min_zoom = 1.0
-        elif new == self.max_level:
+        if new == self.max_level:
             self.max_zoom = 1.0
-        else:
-            self.min_zoom = 0.5
-            self.max_zoom = 2.0
 
     def normal_mouse_wheel(self, event):
         """ Handles the mouse wheel being used when the tool is in the 'normal'
