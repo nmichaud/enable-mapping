@@ -1,7 +1,4 @@
 
-import asyncore
-import Queue
-from threading import Thread
 from cStringIO import StringIO
 
 # Enthought library imports
@@ -15,15 +12,13 @@ from i_tile_manager import ITileManager
 from tile_manager import TileManager
 from cacheing_decorators import lru_cache
 from asynchttp import AsyncHTTPConnection
+from async_loader import async_loader
 
 class HTTPTileManager(TileManager):
 
     implements(ITileManager)
     
     #### ITileManager interface ###########################################
-
-    def start(self):
-        self._thread.start()
 
     def get_tile_size(self):
         return 256
@@ -38,7 +33,7 @@ class HTTPTileManager(TileManager):
     @lru_cache()
     def get_tile(self, zoom, row, col):
         # Schedule a request to get the tile
-        self._request_queue.put(TileRequest(self._tile_received,
+        async_loader.put(TileRequest(self._tile_received,
                         self.server, self.port, self.url,
                         (zoom, row, col)))
         # return a blank tile for now
@@ -52,9 +47,6 @@ class HTTPTileManager(TileManager):
 
     ### Private interface ##################################################
     
-    _thread = Any
-    _request_queue = Instance(Queue.Queue)
-    
     def _tile_received(self, (zoom, row, col), data):
         tile = Image(StringIO(data))
         self.get_tile.replace(tile, zoom, row, col)
@@ -65,28 +57,6 @@ class HTTPTileManager(TileManager):
         self.get_tile.clear()
         # This is a hack to repaint
         self.tile_ready = 0,0,0
-
-    def __thread_default(self):
-        return RequestingThread(self._request_queue)
-
-    def __request_queue_default(self):
-        return TileRequestQueue()
-    
-class RequestingThread(Thread):
-    def __init__(self, queue):
-        super(RequestingThread, self).__init__()
-        self.queue = queue
-        self.daemon = True
-
-    def run(self):
-        # Wait for any requests
-        while True:
-            try:
-                reqs = self.queue.get_all(block=False)
-                for req in reqs: req.connect()
-            except Queue.Empty, e:
-                pass
-            asyncore.loop()
 
 class TileRequest(AsyncHTTPConnection):
     def __init__(self, handler, host, port, url, tile_args):
@@ -114,44 +84,3 @@ class TileRequest(AsyncHTTPConnection):
 
     def __repr__(self):
         return str(self)
-
-class TileRequestQueue(Queue.LifoQueue):
-    def get_all(self, block=True, timeout=None):
-        """Remove and return all items from the queue.
-
-        If optional args 'block' is true and 'timeout' is None (the default),
-        block if necessary until an item is available. If 'timeout' is
-        a positive number, it blocks at most 'timeout' seconds and raises
-        the Empty exception if no item was available within that time.
-        Otherwise ('block' is false), return an item if one is immediately
-        available, else raise the Empty exception ('timeout' is ignored
-        in that case).
-        """
-        self.not_empty.acquire()
-        try:
-            if not block:
-                if not self._qsize():
-                    raise Queue.Empty
-            elif timeout is None:
-                while not self._qsize():
-                    self.not_empty.wait()
-            elif timeout < 0:
-                raise ValueError("'timeout' must be a positive number")
-            else:
-                endtime = _time() + timeout
-                while not self._qsize():
-                    remaining = endtime - _time()
-                    if remaining <= 0.0:
-                        raise Queue.Empty
-                    self.not_empty.wait(remaining)
-            items = self._get_all()
-            self.not_full.notify()
-            return items
-        finally:
-            self.not_empty.release()
-
-    def _get_all(self):
-        all = self.queue[:]
-        self.queue = []
-        return all
-

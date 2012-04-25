@@ -76,7 +76,6 @@ def main():
     with enaml.imports():
         from office_view import Main
     window = Main(model=model)
-    manager.start()
     window.show()
 
 if __name__ == "__main__":

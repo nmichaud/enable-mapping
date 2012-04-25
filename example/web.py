@@ -44,9 +44,8 @@ class SingleMap(WebModel):
 
 
 def main():
-    manager = HTTPTileManager(min_level = 0, max_level = 15)
-
-    canvas = MappingCanvas(tile_cache = manager)
+    
+    canvas = MappingCanvas(tile_cache=HTTPTileManager(min_level=0,max_level=15))
 
     nyc = (40.7546423, -73.9748948)
     canvas.add(GeoCircle(radius=4, geoposition=nyc))
@@ -62,7 +61,6 @@ def main():
     with enaml.imports():
         from webmap_view import Main
     window = Main(model=model)
-    manager.start()
     window.show()
 
 if __name__ == "__main__":
