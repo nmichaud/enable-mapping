@@ -1,9 +1,7 @@
 
-from enaml.stdlib.fields import FloatField
-
-enamldef Main(MainWindow):
+enamldef Map(MainWindow):
     attr model
-    title = "MBTile Mapping Demo"
+    title = model.title if hasattr(model, 'title') else "Simple Mapping Demo"
     Container:
         Form:
             Label:

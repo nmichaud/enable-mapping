@@ -30,8 +30,8 @@ def main():
 
     import enaml
     with enaml.imports():
-        from local_view import Main
-    window = Main(model=model)
+        from simple_view import Map
+    window = Map(model=model)
     window.show()
 
 if __name__ == "__main__":

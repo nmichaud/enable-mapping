@@ -1,6 +1,6 @@
 
 from enable.tools.api import ViewportPanTool
-from traits.api import HasTraits, Instance, Str, List, Property, Dict
+from traits.api import HasTraits, Instance, Constant, Str, List, Property, Dict
 
 from mapping.mapping_viewport import MappingViewport
 from mapping.mapping_canvas import MappingCanvas
@@ -10,6 +10,8 @@ from mapping.mbtile_manager import MBTileManager
 from mapping.primitives.api import GeoMarker
 
 class Model(HasTraits):
+
+    title = Constant("Local map with marker")
 
     canvas = Instance(MappingCanvas)
     viewport = Instance(MappingViewport)
@@ -34,8 +36,8 @@ def main():
 
     import enaml
     with enaml.imports():
-        from local_view import Main
-    window = Main(model=model)
+        from simple_view import Map
+    window = Map(model=model)
     window.show()
 
 if __name__ == "__main__":
