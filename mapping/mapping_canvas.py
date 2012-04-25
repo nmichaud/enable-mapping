@@ -1,9 +1,11 @@
 
 import math
+from cStringIO import StringIO
 
 # Enthought library imports
-from traits.api import Tuple, Int, Float, Instance, Property, on_trait_change
+from traits.api import Tuple, Int, Instance, on_trait_change
 
+from kiva.image import Image
 from kiva.constants import FILL
 from enable.api import Canvas, ColorTrait
 
@@ -21,6 +23,17 @@ class MappingCanvas(Canvas):
     
     # FIXME This is a hack - remove when viewport is fixed
     _zoom_level = Int(0)
+
+    _blank_tile = Instance(Image)
+
+    def __blank_tile_default(self):
+        import Image as pil
+        tile = StringIO()
+        pil.new('RGB', (256, 256), (234, 224, 216)).save(tile, format='png')
+        return Image(StringIO(tile.getvalue()))
+
+    def _tile_cache_changed(self, new):
+        new.process_raw = lambda d: Image(StringIO(d))
 
     @on_trait_change('tile_cache:tile_ready')
     def _tile_ready(self, (zoom, row, col)):
@@ -52,7 +65,7 @@ class MappingCanvas(Canvas):
             endx = int(x+width)
             endy = int(y+height)
 
-            lim = 2**zoom * tile_size
+            lim = tile_size << zoom
 
             if starty < 0: starty = 0
             if endy > lim: endy = lim
@@ -60,7 +73,10 @@ class MappingCanvas(Canvas):
             for tx in range(startx, endx, tile_size):
                 for ty in range(starty, endy, tile_size):
                     zoom, row, col = self.tile_cache.convert_to_tilenum(tx, ty, zoom)
-                    gc.draw_image(self.tile_cache.get_tile(zoom, row, col), (tx,ty,tile_size+1, tile_size+1))
+                    tile = self.tile_cache.get_tile(zoom, row, col)
+                    if not tile: tile = self._blank_tile
+                    gc.draw_image(tile, (tx,ty,tile_size, tile_size))
+
         super(MappingCanvas, self)._draw_underlay(gc, view_bounds, mode)
 
     def transformToScreen(self, lat_deg, lon_deg):

@@ -21,8 +21,8 @@ class MBTileManager(TileManager):
     def get_tile(self, zoom, row, col):
         tile = self._tileset.get_tile(zoom, row, col)
         data = tile.get_png()
-        if not data: return self._blank_tile
-        else: return Image(StringIO(data))
+        if not data: return None
+        else: return self.process_raw(data)
 
     def get_tile_size(self):
         return 256

@@ -34,7 +34,7 @@ def lru_cache(maxsize=1024):
         @functools.wraps(user_function)
         def wrapper(*args, **kwds):
             # cache key records both positional and keyword args
-            key = args[1:]
+            key = args[:]
             if kwds:
                 key += (kwd_mark,) + tuple(sorted(kwds.items()))
 

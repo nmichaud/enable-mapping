@@ -1,4 +1,5 @@
 
+import logging
 from cStringIO import StringIO
 
 # Enthought library imports
@@ -37,7 +38,7 @@ class HTTPTileManager(TileManager):
                         self.server, self.port, self.url,
                         (zoom, row, col)))
         # return a blank tile for now
-        return self._blank_tile
+        return None
 
     #### Public interface #################################################
 
@@ -48,9 +49,13 @@ class HTTPTileManager(TileManager):
     ### Private interface ##################################################
     
     def _tile_received(self, (zoom, row, col), data):
-        tile = Image(StringIO(data))
-        self.get_tile.replace(tile, zoom, row, col)
-        self.tile_ready = (zoom, row, col)
+        try:
+            data = self.process_raw(data)
+            self.get_tile.replace(data, self, zoom, row, col)
+            self.tile_ready = (zoom, row, col)
+        except Exception, e:
+            # Failed to process tile
+            logging.exception("Failed to process %s%s"%(self.server, self.url%(zoom,row,col)))
 
     @on_trait_change('server, url')
     def _reset_cache(self, new):

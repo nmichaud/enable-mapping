@@ -1,5 +1,5 @@
 
-from traits.api import Property, property_depends_on
+from traits.api import Property, Bool, property_depends_on
 
 from enable.enable_traits import coordinate_trait
 from enable.primitives.api import Shape
@@ -9,10 +9,12 @@ class GeoPrimitive(Shape):
     """
 
     geoposition  = coordinate_trait
+
+    scale_with_zoom = Bool(False)
     
     position = Property(coordinate_trait)
 
-    @property_depends_on('geoposition, container, container:_zoom_level')
+    @property_depends_on('geoposition, bounds, container, container:_zoom_level')
     def _get_position(self):
         # Translate the geoposition to screen space
         lat, lon = self.geoposition
@@ -34,10 +36,11 @@ class GeoPrimitive(Shape):
 
             # FIXME - this is broken when there are multiple
             # viewports
-            zoom = max([v.zoom for v in self.container.viewports])
+            if not self.scale_with_zoom:
+                zoom = max([v.zoom for v in self.container.viewports])
 
-            gc.scale_ctm(1./zoom, 1./zoom)
-            gc.translate_ctm(-x*(1-zoom), -y*(1-zoom))
+                gc.scale_ctm(1./zoom, 1./zoom)
+                gc.translate_ctm(-x*(1-zoom), -y*(1-zoom))
 
             self._render_primitive(gc, view_bounds, mode)
 

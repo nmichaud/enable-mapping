@@ -1,9 +1,7 @@
 
-from cStringIO import StringIO
-
 # Enthought library imports
-from traits.api import HasTraits, implements, Instance, Event, Int
-from kiva.image import Image
+from traits.api import HasTraits, implements, Event, Int, Callable
+from enable.api import Component
 
 from i_tile_manager import ITileManager
 
@@ -19,6 +17,8 @@ class TileManager(HasTraits):
     
     tile_ready = Event
 
+    process_raw = Callable
+
     def get_tile_size(self):
         """ Return size of tile
         """
@@ -33,11 +33,3 @@ class TileManager(HasTraits):
         """ Convert screen space to a particular tile reference
         """
         raise Exception()
-
-    _blank_tile = Instance(Image)
-    
-    def __blank_tile_default(self):
-        import Image as pil
-        tile = StringIO()
-        pil.new('RGB', (256, 256), (234, 224, 216)).save(tile, format='png')
-        return Image(StringIO(tile.getvalue()))
