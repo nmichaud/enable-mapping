@@ -73,7 +73,7 @@ class MappingCanvas(Canvas):
                     zoom, row, col = self.tile_cache.convert_to_tilenum(tx, ty, zoom)
                     tile = self.tile_cache.get_tile(zoom, row, col)
                     if not tile: tile = self._blank_tile
-                    gc.draw_image(tile, (tx,ty,tile_size, tile_size))
+                    gc.draw_image(tile, (tx,ty,tile_size+1, tile_size+1))
 
         super(MappingCanvas, self)._draw_underlay(gc, view_bounds, mode)
 
