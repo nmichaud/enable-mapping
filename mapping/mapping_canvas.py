@@ -56,8 +56,6 @@ class MappingCanvas(Canvas):
         x, y, width, height = view_bounds
         zoom = self._zoom_level
         with gc:
-            gc.clip_to_rect(x,y,width, height)
-
             # Tile image
             tile_size = self.tile_cache.get_tile_size()
             startx = int(x) / tile_size * tile_size
