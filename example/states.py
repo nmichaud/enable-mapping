@@ -4,13 +4,8 @@ import geojson
 from traits.api import HasTraits, Constant, Instance, Str, Property
 from enable.tools.api import ViewportPanTool
 
-from mapping.mapping_viewport import MappingViewport
-from mapping.mapping_canvas import MappingCanvas
-from mapping.geojson_overlay import GeoJSONOverlay
-from mapping.http_tile_manager import HTTPTileManager
-from mapping.mbtile_manager import MBTileManager
-
-from mapping.primitives.api import *
+from mapping.enable.api import MappingCanvas, MappingViewport, MBTileManager, \
+                               GeoJSONOverlay
 
 class SingleMap(HasTraits):
 

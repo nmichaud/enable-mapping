@@ -3,13 +3,8 @@ from enable.tools.api import ViewportPanTool
 from traits.api import HasTraits, Instance, Str, List, Property, Dict, \
                        Tuple, Float
 
-from mapping.mapping_viewport import MappingViewport
-from mapping.mapping_canvas import MappingCanvas
-from mapping.mapping_zoom import MappingZoomTool
-
-from mapping.http_tile_manager import HTTPTileManager
-
-from mapping.primitives.api import GeoMarker, GeoCircle
+from mapping.enable.api import MappingCanvas, MappingViewport, HTTPTileManager
+from mapping.enable.primitives.api import GeoMarker, GeoCircle
 
 class Office(HasTraits):
     location = Tuple(Float, Float)

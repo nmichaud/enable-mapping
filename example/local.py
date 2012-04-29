@@ -2,10 +2,7 @@
 from enable.tools.api import ViewportPanTool
 from traits.api import HasTraits, Instance, Str, List, Property, Dict
 
-from mapping.mapping_viewport import MappingViewport
-from mapping.mapping_canvas import MappingCanvas
-
-from mapping.mbtile_manager import MBTileManager
+from mapping.enable.api import MappingCanvas, MappingViewport, MBTileManager
 
 
 class Model(HasTraits):
