@@ -18,6 +18,8 @@ from async_loader import async_loader
 class HTTPTileManager(TileManager):
 
     implements(ITileManager)
+
+    zoom_offset = Int(0)
     
     #### ITileManager interface ###########################################
 
@@ -34,6 +36,7 @@ class HTTPTileManager(TileManager):
     @lru_cache()
     def get_tile(self, zoom, row, col):
         # Schedule a request to get the tile
+        zoom += self.zoom_offset
         async_loader.put(TileRequest(self._tile_received,
                         self.server, self.port, self.url,
                         (zoom, row, col)))
@@ -51,6 +54,7 @@ class HTTPTileManager(TileManager):
     def _tile_received(self, (zoom, row, col), data):
         try:
             data = self.process_raw(data)
+            zoom -= self.zoom_offset
             self.get_tile.replace(data, self, zoom, row, col)
             self.tile_ready = (zoom, row, col)
         except Exception, e:
