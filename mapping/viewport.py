@@ -6,8 +6,8 @@ from enable.viewport import Viewport
 from enable.base import empty_rectangle, intersect_bounds
 from enable.enable_traits import coordinate_trait
 
-from mapping_canvas import MappingCanvas
-from mapping_zoom import MappingZoomTool
+from canvas import MappingCanvas
+from zoom import MappingZoomTool
 
 class MappingViewport(Viewport):
 
