@@ -58,7 +58,7 @@ def _create_plot_component():
     # Need a better way add the overlays
     cmap = renderers[0]
 
-    map = Map(cmap, tile_cache=tile_cache, zoom_level=4)
+    map = Map(cmap, tile_cache=tile_cache, zoom_level=2)
     cmap.underlays.append(map)
     
     plot.title = "Unfunded Liabilities (% GDP)"
@@ -66,9 +66,9 @@ def _create_plot_component():
     plot.tools.append(ZoomTool(plot))
 
     plot.index_axis.title = "Longitude"
-    plot.index_axis.tick_label_formatter = convert_lon
+    #plot.index_axis.tick_label_formatter = convert_lon
     plot.value_axis.title = "Latitude"
-    plot.value_axis.tick_label_formatter = convert_lat
+    #plot.value_axis.tick_label_formatter = convert_lat
 
     cmap.overlays.append(
             ColormappedSelectionOverlay(cmap, fade_alpha=0.35,
