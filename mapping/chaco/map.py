@@ -100,7 +100,8 @@ class Map(AbstractOverlay):
                 range.set_bounds(midp - half, midp + half)
             self.invalidate()
 
-    def _tile_ready_changed_for_tile_cache(self):
+    @on_trait_change("_canvas:tile_cache:tile_ready")
+    def _tile_ready(self):
         self.invalidate()
 
     def _bounds_changed(self, old, new):
