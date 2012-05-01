@@ -1,0 +1,36 @@
+
+enamldef DateTweaker(Container):
+    constraints = [
+        vertical(top, 0, sldr, 0, bottom),
+        horizontal(left, 0, lbl, 0, sldr, 0, right),
+        align('top', lbl, sldr),
+        lbl.width == 50,
+    ]
+    Label:
+        id: lbl
+        text << str(model.data_columns[sldr.value])
+        hug_width = 'strong'
+        font = '10 mono'
+    Slider:
+        id: sldr
+        orientation = 'horizontal'
+        minimum = 0
+        maximum = len(model.data_columns)-1
+        tick_interval = 1
+        value ::
+            setattr(model, "column", model.data_columns[value])
+
+enamldef MapView(MainWindow):
+    id: main
+    attr model
+    title << model.title
+    initial_size = (1024, 768)
+    Container:
+        Form:
+            Label:
+                text = "Year"
+            DateTweaker:
+                id: tweaker
+        EnableCanvas:
+            id: map
+            component = model.plot

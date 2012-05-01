@@ -39,7 +39,8 @@ def _create_plot_component():
     lat = (1 - (1. - numpy.log(numpy.tan(lat) +
                                (1./numpy.cos(lat)))/numpy.pi)/2.0)
 
-    data = states['unfunded liabilities (%)']
+    populations = pandas.read_csv('example/state_populations.csv')
+    data = populations['2010']
 
     plot = Plot(ArrayPlotData(index = lon, value=lat, color=data))
     renderers = plot.plot(("index", "value", "color"),
@@ -47,9 +48,9 @@ def _create_plot_component():
               name = "unfunded",
               color_mapper = OrRd,
               marker = "circle",
-              outline_color = 'white',
-              line_width = 0.5,
-              marker_size = 6,
+              outline_color = 'lightgray',
+              line_width = 1.,
+              marker_size = 10,
               )
 
     tile_cache = MBTileManager(filename = '../mbutil/mapbox-streets.mbtiles',
@@ -58,17 +59,17 @@ def _create_plot_component():
     # Need a better way add the overlays
     cmap = renderers[0]
 
-    map = Map(cmap, tile_cache=tile_cache, zoom_level=2)
+    map = Map(cmap, tile_cache=tile_cache, zoom_level=3)
     cmap.underlays.append(map)
     
-    plot.title = "Unfunded Liabilities (% GDP)"
+    plot.title = "2010 Population"
     plot.tools.append(PanTool(plot))
     plot.tools.append(ZoomTool(plot))
 
     plot.index_axis.title = "Longitude"
-    #plot.index_axis.tick_label_formatter = convert_lon
+    plot.index_axis.tick_label_formatter = convert_lon
     plot.value_axis.title = "Latitude"
-    #plot.value_axis.tick_label_formatter = convert_lat
+    plot.value_axis.tick_label_formatter = convert_lat
 
     cmap.overlays.append(
             ColormappedSelectionOverlay(cmap, fade_alpha=0.35,
