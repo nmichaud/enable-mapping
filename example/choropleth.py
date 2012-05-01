@@ -125,21 +125,17 @@ class Demo(HasTraits):
    
 
 if __name__ == "__main__":
-    states = pandas.read_csv('example/states.csv')
-    lon = (states['longitude'] + 180.) / 360.
-    lat = numpy.radians(states['latitude'])
-    lat = (1 - (1. - numpy.log(numpy.tan(lat) +
-                               (1./numpy.cos(lat)))/numpy.pi)/2.0)
-
     populations = pandas.read_csv('example/state_populations.csv')
 
     from mapping.enable.geojson_overlay import process_raw
     polys = process_raw(file("example/states.geojs").read().replace('\r\n',''))
     # generate compiled paths from polys
     paths = []
-    for poly, coord in zip(polys, zip(lon, lat)):
+    coords = numpy.zeros((len(polys), 2))
+    for poly, coord in zip(polys, coords):
         path = CompiledPath()
-        coord = numpy.array(coord)
+        total = numpy.sum((numpy.sum(p, axis=0) for p in poly), axis=0)
+        coord[:] = total/sum(map(len,poly))
         for p in poly:
             path.lines(p - coord) # recenter on origin
         paths.append(path)
@@ -149,8 +145,8 @@ if __name__ == "__main__":
         
     view = MapView(
         model = Demo(title = "State population from 1900 to 2010",
-                     index_ds = ArrayDataSource(lon),
-                     value_ds = ArrayDataSource(lat),
+                     index_ds = ArrayDataSource(coords[:,0]),
+                     value_ds = ArrayDataSource(coords[:,1]),
                      paths = paths,
                      dataframe = populations),
     )
