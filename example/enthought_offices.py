@@ -56,7 +56,7 @@ class MultiMap(HasTraits):
 def main():
     manager = HTTPTileManager(min_level=0, max_level=15,
                               server='d.tiles.mapbox.com',
-                              url='/v3/mapbox.mapbox-streets/%d/%d/%d.png')
+                              url='/v3/mapbox.mapbox-streets/%(zoom)d/%(row)d/%(col)d.png')
     canvas = MappingCanvas(tile_cache = manager)
 
     nyc = Office(city="New York City", location=(40.7546423, -73.9748948))

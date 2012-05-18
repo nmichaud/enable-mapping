@@ -36,7 +36,7 @@ class HTTPTileManager(TileManager):
         # Schedule a request to get the tile
         async_loader.put(TileRequest(self._tile_received,
                         self.server, self.port, self.url,
-                        (zoom, row, col)))
+                        dict(zoom=zoom, row=row, col=col)))
         # return a blank tile for now
         return None
 
@@ -48,7 +48,8 @@ class HTTPTileManager(TileManager):
 
     ### Private interface ##################################################
     
-    def _tile_received(self, (zoom, row, col), data):
+    def _tile_received(self, tile_args, data):
+        zoom, row, col = tile_args['zoom'], tile_args['row'], tile_args['col']
         try:
             data = self.process_raw(data)
             self.get_tile.replace(data, self, zoom, row, col)

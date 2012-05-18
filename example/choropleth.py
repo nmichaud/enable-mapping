@@ -35,7 +35,7 @@ def _create_plot_component(max_pop, index_ds, value_ds, color_ds, paths):
     
     tile_cache =  HTTPTileManager(min_level=2, max_level=4,
                                   server='tile.cloudmade.com',
-                                  url='/1a1b06b230af4efdbb989ea99e9841af/20760/256/%d/%d/%d.png')
+                                  url='/1a1b06b230af4efdbb989ea99e9841af/20760/256/%(zoom)d/%(row)d/%(col)d.png')
 
     color_range = DataRange1D(color_ds, low_setting=0) #, high_setting=max_pop)
     
