@@ -69,8 +69,9 @@ def process_raw(data):
         features = geojs.features
         for feature in geojs.features:
             p = []
-            process_geometry(feature.geometry, p)
-            polys.append(p)
+            if feature.geometry:
+                process_geometry(feature.geometry, p)
+                polys.append(p)
     elif geotype == "Feature":
         process_geometry(geojs.geometry, polys)
 
