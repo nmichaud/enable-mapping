@@ -40,7 +40,9 @@ class RequestingThread(Thread):
         # Wait for any requests
         while True:
             try:
-                reqs = self.queue.get_all(block=False)
+                # Block if there are no pending asyncore requests
+                block = len(asyncore.socket_map) == 0
+                reqs = self.queue.get_all(block=block)
                 for req in reqs:
                     req.connect()
             except Queue.Empty, e:
