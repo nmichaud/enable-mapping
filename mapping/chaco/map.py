@@ -3,7 +3,7 @@ Implementation of map underlay layer
 """
 
 import numpy
-from traits.api import Instance, Int, DelegatesTo, on_trait_change
+from traits.api import Instance, Int, Range, DelegatesTo, on_trait_change
 from chaco.api import AbstractOverlay, LinearMapper
 from mapping.enable.canvas import MappingCanvas
 from mapping.enable.i_tile_manager import ITileManager
@@ -19,6 +19,8 @@ class Map(AbstractOverlay):
     xmapper = DelegatesTo("component", "index_mapper")
     ymapper = DelegatesTo("component", "value_mapper")
     tile_cache = DelegatesTo("_canvas")
+    alpha = DelegatesTo("_canvas", "tile_alpha")
+    bgcolor = DelegatesTo("_canvas")
 
     def overlay(self, component, gc, view_bounds=None, mode="normal"):
         # Compute the viewbounds for the canvas to render

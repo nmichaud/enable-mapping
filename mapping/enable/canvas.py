@@ -3,7 +3,7 @@ import math
 from cStringIO import StringIO
 
 # Enthought library imports
-from traits.api import Tuple, Int, Instance, on_trait_change
+from traits.api import Tuple, Int, Range, Instance, on_trait_change
 
 from kiva.image import Image
 from kiva.constants import FILL
@@ -18,6 +18,8 @@ class MappingCanvas(Canvas):
     """
 
     tile_cache = Instance(ITileManager)
+
+    tile_alpha = Range(0.0, 1.0, 1.0)
 
     bgcolor = ColorTrait("lightsteelblue")
     
@@ -68,6 +70,7 @@ class MappingCanvas(Canvas):
             if starty < 0: starty = 0
             if endy > lim: endy = lim
 
+            gc.set_alpha(self.tile_alpha)
             for tx in range(startx, endx, tile_size):
                 for ty in range(starty, endy, tile_size):
                     zoom, row, col = self.tile_cache.convert_to_tilenum(tx, ty, zoom)
