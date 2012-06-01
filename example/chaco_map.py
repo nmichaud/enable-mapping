@@ -41,6 +41,9 @@ def _create_plot_component():
 
     populations = pandas.read_csv('example/state_populations.csv')
     data = populations['2010']
+    lon = lon.view(numpy.ndarray)
+    lat = lat.view(numpy.ndarray)
+    data = data.view(numpy.ndarray)
 
     plot = Plot(ArrayPlotData(index = lon, value=lat, color=data))
     renderers = plot.plot(("index", "value", "color"),
@@ -53,7 +56,7 @@ def _create_plot_component():
               marker_size = 10,
               )
 
-    tile_cache = MBTileManager(filename = '../mbutil/mapbox-streets.mbtiles',
+    tile_cache = MBTileManager(filename = './example/map.mbtiles',
                                min_level = 2,
                                max_level = 4)
     # Need a better way add the overlays

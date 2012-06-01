@@ -112,10 +112,10 @@ class Demo(HasTraits):
                 self.value_ds, self.color_ds, self.paths)
 
     def _column_changed(self, new):
-        self.color_ds.set_data(self.dataframe[new])
+        self.color_ds.set_data(self.dataframe[new].view(numpy.ndarray))
 
     def _color_ds_default(self):
-        return ArrayDataSource(self.dataframe[self.column])
+        return ArrayDataSource(self.dataframe[self.column].view(numpy.ndarray))
 
     def _column_default(self):
         return self.dataframe.columns[-1]
