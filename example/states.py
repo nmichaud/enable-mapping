@@ -15,13 +15,13 @@ class SingleMap(HasTraits):
     viewport = Instance(MappingViewport)
 
 def main():
-    tile_layer = MBTileManager(filename = 'example/map.mbtiles',
+    tile_layer = MBTileManager(filename = 'map.mbtiles',
                                min_level = 2,
                                max_level = 4)
 
     canvas = MappingCanvas(tile_cache = tile_layer)
     canvas.overlays.append(GeoJSONOverlay(component=canvas,
-                                          geojs_filename='example/states.geojs'))
+                                          geojs_filename='states.geojs'))
 
     viewport = MappingViewport(component=canvas, zoom_level=3,
                                geoposition=(37.09024, -95.712891))

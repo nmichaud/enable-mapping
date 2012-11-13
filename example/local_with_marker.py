@@ -16,13 +16,13 @@ class Model(HasTraits):
 
 
 def main():
-    manager = MBTileManager(filename = 'example/map.mbtiles',
+    manager = MBTileManager(filename = 'map.mbtiles',
                               min_level = 0,
                               max_level = 3)
 
     canvas = MappingCanvas(tile_cache = manager)
 
-    canvas.add(GeoMarker(filename='example/enthought-marker.png',
+    canvas.add(GeoMarker(filename='enthought-marker.png',
                          geoposition = (40.7546423, -73.9748948)))
 
     viewport = MappingViewport(component=canvas)

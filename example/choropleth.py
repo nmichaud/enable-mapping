@@ -125,10 +125,10 @@ class Demo(HasTraits):
    
 
 if __name__ == "__main__":
-    populations = pandas.read_csv('example/state_populations.csv')
+    populations = pandas.read_csv('state_populations.csv')
 
     from mapping.enable.geojson_overlay import process_raw
-    polys = process_raw(file("example/states.geojs").read().replace('\r\n',''))
+    polys = process_raw(file("states.geojs").read().replace('\r\n',''))
     # generate compiled paths from polys
     paths = []
     coords = numpy.zeros((len(polys), 2))

@@ -33,13 +33,13 @@ def create_colorbar(colormap):
 
 def _create_plot_component():
     # Load state data
-    states = pandas.read_csv('example/states.csv')
+    states = pandas.read_csv('states.csv')
     lon = (states['longitude'] + 180.) / 360.
     lat = numpy.radians(states['latitude'])
     lat = (1 - (1. - numpy.log(numpy.tan(lat) +
                                (1./numpy.cos(lat)))/numpy.pi)/2.0)
 
-    populations = pandas.read_csv('example/state_populations.csv')
+    populations = pandas.read_csv('state_populations.csv')
     data = populations['2010']
     lon = lon.view(numpy.ndarray)
     lat = lat.view(numpy.ndarray)
@@ -56,7 +56,7 @@ def _create_plot_component():
               marker_size = 10,
               )
 
-    tile_cache = MBTileManager(filename = './example/map.mbtiles',
+    tile_cache = MBTileManager(filename = './map.mbtiles',
                                min_level = 2,
                                max_level = 4)
     # Need a better way add the overlays

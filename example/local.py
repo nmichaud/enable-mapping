@@ -14,9 +14,9 @@ class Model(HasTraits):
 
 
 def main():
-    manager = MBTileManager(filename = 'example/map.mbtiles',
+    manager = MBTileManager(filename = 'data/map.mbtiles',
                               min_level = 0,
-                              max_level = 3)
+                              max_level = 8)
 
     canvas = MappingCanvas(tile_cache = manager)
 

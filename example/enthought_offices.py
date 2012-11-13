@@ -26,7 +26,7 @@ class MultiMap(HasTraits):
         canvas = self.canvas
     
         canvas.add(GeoMarker(geoposition=office.location,
-                         filename='example/enthought-marker.png',
+                         filename='enthought-marker.png',
                          ))
 
         viewport = MappingViewport(component=canvas)
@@ -43,7 +43,7 @@ class MultiMap(HasTraits):
         canvas = self.canvas
         for office in new:
             canvas.add(GeoMarker(geoposition=office.location,
-                             filename='example/enthought-marker.png',
+                             filename='enthought-marker.png',
                              ))
 
             viewport = MappingViewport(component=canvas)
