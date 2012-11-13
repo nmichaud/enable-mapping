@@ -1,7 +1,11 @@
 
 from canvas import MappingCanvas
 from viewport import MappingViewport
-from geojson_overlay import GeoJSONOverlay
+try:
+    from geojson_overlay import GeoJSONOverlay
+except ImportError:
+    # No geojson
+    pass
 
 # Tile managers
 from mbtile_manager import MBTileManager
