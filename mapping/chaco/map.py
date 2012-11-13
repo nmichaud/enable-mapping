@@ -32,6 +32,8 @@ class Map(AbstractOverlay):
         (ylow, yhigh) = self.ymapper.map_data(numpy.array([ylow, yhigh]))
         
         zoom = self.zoom_level
+        # Don't render the map if we've zoomed out too far
+        if zoom < 0: return
 
         factor = self.tile_cache.get_tile_size() << zoom
         
@@ -81,13 +83,8 @@ class Map(AbstractOverlay):
             new.x_mapper.on_trait_change(self._mapper_scale_change, "_scale")
         
     def _mapper_scale_change(self, obj, name, old, new):
-        factor = new/old
-        if numpy.allclose(factor, 2.0):
-            # zoom in
-            self.zoom_level += 1
-        elif numpy.allclose(factor, 0.5):
-            # zoom out
-            self.zoom_level -= 1
+        if old == 1: return # start condition, don't do anything
+        self.zoom_level += int(round(numpy.log2(new/old)))
         self.invalidate()
 
     def _update_range(self):
