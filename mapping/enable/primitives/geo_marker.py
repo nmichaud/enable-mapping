@@ -1,5 +1,5 @@
 
-from traits.api import Instance, Float, Str
+from traits.api import Instance, Str
 from kiva.image import Image
 from enable.enable_traits import coordinate_trait
 

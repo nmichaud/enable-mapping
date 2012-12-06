@@ -1,6 +1,6 @@
 
 from enable.tools.api import ViewportPanTool
-from traits.api import HasTraits, Instance, Str, List, Property, Dict
+from traits.api import HasTraits, Instance, Str, Dict
 
 from mapping.enable.api import MappingCanvas, MappingViewport, HTTPTileManager
 from mapping.enable.primitives.api import GeoCircle
@@ -9,18 +9,18 @@ class WebModel(HasTraits):
 
     server = Str
     servers = Dict
-    
+
     def _server_changed(self, new):
         server, url = self.servers[new]
         self.canvas.tile_cache.trait_set(server=server, url=url)
 
     def _server_default(self):
         return self.servers.keys()[0]
-        
+
     def _servers_default(self):
         return dict([
             ('MapQuest', ('otile1.mqcdn.com','/tiles/1.0.0/osm/%(zoom)d/%(row)d/%(col)d.jpg')),
-            ('MapQuest Arial', ('oatile1.mqcdn.com','/tiles/1.0.0/sat/%(zoom)d/%(row)d/%(col)d.jpg')),
+            ('MapQuest Aerial', ('oatile1.mqcdn.com','/tiles/1.0.0/sat/%(zoom)d/%(row)d/%(col)d.jpg')),
             ('OpenStreetMap', ('tile.openstreetmap.org', '/%(zoom)d/%(row)d/%(col)d.png')),
             ('MapBox', ('d.tiles.mapbox.com', '/v3/mapbox.mapbox-streets/%(zoom)d/%(row)d/%(col)d.png')),
             ('MapBox Lacquer', ('d.tiles.mapbox.com', '/v3/mapbox.mapbox-lacquer/%(zoom)d/%(row)d/%(col)d.png')),
@@ -30,10 +30,10 @@ class WebModel(HasTraits):
             ('Stamen Toner', ('tile.stamen.com', '/toner/%(zoom)d/%(row)d/%(col)d.jpg')),
             ('Stamen Terrain', ('tile.stamen.com', '/terrain-background/%(zoom)d/%(row)d/%(col)d.png')),
             ]
-            )
+        )
 
 class SingleMap(WebModel):
-    
+
     canvas = Instance(MappingCanvas)
     viewport = Instance(MappingViewport)
 

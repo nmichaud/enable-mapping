@@ -1,8 +1,7 @@
-
+from enable.primitives.shape import Shape
+from enable.enable_traits import coordinate_trait
 from traits.api import Property, Bool, property_depends_on
 
-from enable.enable_traits import coordinate_trait
-from enable.primitives.api import Shape
 
 class GeoPrimitive(Shape):
     """ Coordinates are in Lat/Long using WGS84 Datum

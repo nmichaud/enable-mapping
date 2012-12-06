@@ -3,7 +3,7 @@ import math
 from cStringIO import StringIO
 
 # Enthought library imports
-from traits.api import Tuple, Int, Range, Instance, on_trait_change
+from traits.api import Int, Range, Instance, on_trait_change
 
 from kiva.image import Image
 from kiva.constants import FILL

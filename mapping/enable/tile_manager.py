@@ -1,7 +1,6 @@
 
 # Enthought library imports
 from traits.api import HasTraits, implements, Event, Int, Callable
-from enable.api import Component
 
 from i_tile_manager import ITileManager
 
