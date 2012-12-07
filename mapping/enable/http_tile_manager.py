@@ -1,11 +1,8 @@
 
 import logging
-from cStringIO import StringIO
 
 # Enthought library imports
-from traits.api import HasTraits, Any, Dict, Int, Instance, Set, \
-                       Str, Event, implements, on_trait_change
-from kiva.image import Image
+from traits.api import Int, Str, implements, on_trait_change
 from pyface.gui import GUI
 
 # Local imports

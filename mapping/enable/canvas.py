@@ -89,7 +89,7 @@ class MappingCanvas(Canvas):
     def _WGS84_to_screen(self, lat_deg, lon_deg, zoom):
         """
          lat = Latitude in degrees
-         lon = Longitute in degrees
+         lon = Longitude in degrees
          zoom = zoom level
         """
         lat_rad = math.radians(lat_deg)

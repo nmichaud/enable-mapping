@@ -3,6 +3,11 @@ from traits.api import DelegatesTo, Property
 from enable.tools.viewport_zoom_tool import ViewportZoomTool
 
 class MappingZoomTool(ViewportZoomTool):
+    """Zoom tool for a map viewport.
+
+    self.component is the viewport
+    self.component.component is the canvas
+    """
 
     zoom_level = DelegatesTo('component')
     min_level = Property(lambda self: self.component.min_level)
@@ -29,9 +34,6 @@ class MappingZoomTool(ViewportZoomTool):
         state.
 
         Scrolling the wheel "up" zooms in; scrolling it "down" zooms out.
-        self.component is the viewport
-        self.component.component is the canvas
-
         """
         if self.enable_wheel and event.mouse_wheel != 0:
 
