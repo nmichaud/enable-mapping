@@ -35,8 +35,9 @@ setup(
     description = 'application tools',
     long_description = open('README.rst').read(),
     include_package_data = True,
-    package_data = dict(mapping=[
-    ]), 
+    package_data = {
+        'mapping.enable': ['fonts/*']
+    },
     install_requires = info['__requires__'],
     license = 'BSD',
     packages = find_packages(),
