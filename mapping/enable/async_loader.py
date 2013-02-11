@@ -1,15 +1,11 @@
 
 import asyncore
 import Queue
+import socket
 from threading import Thread
 
 # Enthought library imports
-from traits.api import HasTraits, Any, Dict, Int, Instance, Set, \
-                       Str, Event, implements, on_trait_change
-from pyface.gui import GUI
-
-# Local imports
-from asynchttp import AsyncHTTPConnection
+from traits.api import HasTraits, Any, Instance
 
 class AsyncLoader(HasTraits):
     
@@ -44,7 +40,12 @@ class RequestingThread(Thread):
                 block = len(asyncore.socket_map) == 0
                 reqs = self.queue.get_all(block=block)
                 for req in reqs:
-                    req.connect()
+                    try:
+                        req.connect()
+                    except socket.gaierror as e:
+                        # Don't panic, the server is not available
+                        pass
+
             except Queue.Empty, e:
                 pass
             asyncore.loop()

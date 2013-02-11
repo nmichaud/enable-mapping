@@ -29,9 +29,30 @@ class MappingCanvas(Canvas):
     _blank_tile = Instance(Image)
 
     def __blank_tile_default(self):
+        import pkg_resources
         import Image as pil
+        import ImageDraw
+        import ImageFont
+
+        im = pil.new('RGB', (256, 256), (234, 224, 216))
+
+        text = 'Image not available'
+        try:
+            font_file = pkg_resources.resource_filename(
+                'mapping.enable', 'fonts/Verdana.ttf'
+            )
+            font = ImageFont.truetype(font_file, 18)
+        except IOError:
+            font = ImageFont.load_default()
+        size = font.getsize(text)
+        pos = (256-size[0])//2, (256-size[1])//2
+
+        draw = ImageDraw.Draw(im)
+        draw.text(pos, text, fill=(200, 200, 200), font=font)
+        del draw
+
         tile = StringIO()
-        pil.new('RGB', (256, 256), (234, 224, 216)).save(tile, format='png')
+        im.save(tile, format='png')
         return Image(StringIO(tile.getvalue()))
 
     def _tile_cache_changed(self, new):
