@@ -15,7 +15,7 @@ class MappingViewport(Viewport):
 
     zoom_level = Int(0)
 
-    geoposition = coordinate_trait
+    geoposition = Property(coordinate_trait, depends_on='view_position')
     latitude = Property(Float, depends_on='geoposition')
     longitude = Property(Float, depends_on='geoposition')
 
@@ -30,10 +30,11 @@ class MappingViewport(Viewport):
 
     draw_cross = Bool(True)
 
+    fit_window = True
+
     def __init__(self, **traits):
         # Skip parent constructor
         super(Viewport, self).__init__(**traits)
-        self._update_component_view_bounds()
         self.zoom_tool = MappingZoomTool(self)
         if self.enable_zoom:
             self._enable_zoom_changed(False, True)
@@ -41,25 +42,30 @@ class MappingViewport(Viewport):
     def _get_latitude(self):
         return self.geoposition[0]
     def _set_latitude(self, val):
-        self.geoposition[0] = val 
+        self.geoposition[0] = val
 
     def _get_longitude(self):
         return self.geoposition[1]
     def _set_longitude(self, val):
-        self.geoposition[1] = val 
+        self.geoposition[1] = val
 
-    @on_trait_change('geoposition, bounds, bounds_items')
-    def _update_position(self, object, name, old, new):
-        # Update position
-        lat, lon = self.geoposition
+    def _get_geoposition(self):
+        x, y = self.view_position
+        w, h = self.bounds
+        return self.component._screen_to_WGS84(x+w/2., y+h/2., self.zoom_level)
+
+    def _set_geoposition(self, (lat, lon)):
         x, y = self.component._WGS84_to_screen(lat, lon, self.zoom_level)
         w, h = self.bounds
         self.view_position = [x - w/2., y - h/2.]
+        self.component.request_redraw()
 
-    def _view_position_changed(self, (x, y)):
-        w, h = self.bounds
-        lat, lon = self.component._screen_to_WGS84(x+w/2., y+h/2., self.zoom_level)
-        self.trait_set(geoposition = [lat, lon])
+    def _bounds_changed(self, old, new):
+        # Update position
+        dw, dh = new[0]-old[0], new[1]-old[1]
+        x, y = self.view_position
+        self.view_position = [x - dw/2., y - dh/2.]
+        super(MappingViewport, self)._bounds_changed(old, new)
 
     def _draw_overlay(self, gc, view_bounds=None, mode="normal"):
         if self.draw_cross:
